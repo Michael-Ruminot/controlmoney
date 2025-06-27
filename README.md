@@ -1,5 +1,6 @@
 Sistema de control de ingresos y gastos
-Tecnologias usadas: Flask , Sqlite, Html, Javascript, Bootstrap
+
+- Tecnologias usadas: Flask , Sqlite, Html, Javascript, Bootstrap
 
 - Para correr el proyecto en tu maquina local debes abrir el terminal:
 1. //Crear entorno virtual//           py -3 -m venv .venv 
@@ -21,11 +22,12 @@ Tecnologias usadas: Flask , Sqlite, Html, Javascript, Bootstrap
   <!-- Al final del <body>, para el JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
   
-  Para el uso de los graficos se usa la biblioteca de javascript chart.js agregando el CDN a la plantilla HTML:
+- Para el uso de los graficos se usa la biblioteca de javascript chart.js agregando el CDN a la plantilla HTML:
   <!-- Al final del <body>, para el JS -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-- El modelo de la base de datos es como la clase de ejemplo:
+- El modelo de la base de datos se crea con una clase en la app:
+  
 ![image](https://github.com/Michael-Ruminot/controlmoney/blob/cba134257a1a53dfea6c0f0c2ea0c9158fef5bea/Class%20movimiento.png)
 
 
@@ -33,7 +35,7 @@ Tecnologias usadas: Flask , Sqlite, Html, Javascript, Bootstrap
 ![image](https://github.com/Michael-Ruminot/controlmoney/blob/88e7d67fb8ed87dc03f4ac1fd45b2beea373b7e3/basedatos.png)
 
 
-Pagina principal del sistema:
+- Pagina principal del sistema:
 ![image](https://github.com/Michael-Ruminot/controlmoney/blob/69665d4c0b2f0ac072cc125c314850c8c10cc895/principal.png)
 ![image](https://github.com/Michael-Ruminot/controlmoney/blob/fda034353a7859d4cd0d1cd2ab944cc450bb75c2/editar.png)
 ![image](https://github.com/Michael-Ruminot/controlmoney/blob/fda034353a7859d4cd0d1cd2ab944cc450bb75c2/eliminar.png)
