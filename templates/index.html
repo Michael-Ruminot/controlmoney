@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Control de Dinero</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+</head>
+<body class="bg-light">
+<div class="container py-4">
+  <h1 class="mb-4">Control de Dinero</h1>
+
+  <!-- Formulario principal -->
+  <form method="POST" action="/" class="row g-3 mb-4">
+    <div class="col-md-6">
+      <label class="form-label">Descripción</label>
+      <input type="text" class="form-control" name="descripcion" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Monto (CLP)</label>
+      <input type="text" class="form-control" name="monto" id="monto" required>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Tipo</label>
+      <select name="tipo" class="form-select" required>
+        <option value="">Seleccione</option>
+        <option value="ingreso">Ingreso</option>
+        <option value="gasto">Gasto</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Categoría</label>
+      <select name="categoria" class="form-select" required>
+        <option value="">Seleccione</option>
+        <option>CMR</option>
+        <option>Credito</option>
+        <option>Wom</option>
+        <option>Luz</option>
+        <option>Casa</option>
+        <option>Once</option>
+        <option>Ahorro</option>
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Mes</label>
+      <select name="mes_movimiento" class="form-select" required>
+        {% set meses_nombre = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+                               "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"] %}
+        {% for i in range(1, 13) %}
+          <option value="{{ i }}" {% if i == mes_filtro %}selected{% endif %}>
+            {{ meses_nombre[i - 1] }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label">Año</label>
+      <input type="number" name="anio_movimiento" class="form-control" value="{{ anio_filtro }}" required>
+    </div>
+    <div class="col-12">
+      <button type="submit" class="btn btn-primary">Agregar</button>
+    </div>
+  </form>
+
+  <!-- Filtros -->
+  <form method="get" class="row g-2 mb-4">
+    <div class="col-md-5">
+      <select name="mes" class="form-select" required>
+        <option value="">Mes</option>
+        {% for m in range(1, 13) %}
+          <option value="{{ m }}" {% if m == mes_filtro %}selected{% endif %}>
+            {{ ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"][m-1] }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-5">
+      <select name="anio" class="form-select" required>
+        <option value="">Año</option>
+        {% for y in range(2020, 2031) %}
+          <option value="{{ y }}" {% if y == anio_filtro %}selected{% endif %}>{{ y }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2 d-grid">
+      <button type="submit" class="btn btn-success">Filtrar</button>
+    </div>
+  </form>
+
+  <!-- Totales -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <div class="card text-white bg-success">
+        <div class="card-body">Ingresos: {{ ingresos | formato_clp }}</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-danger">
+        <div class="card-body">Gastos: {{ gastos | formato_clp }}</div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card text-white bg-dark">
+        <div class="card-body">Total General: {{ total_general | formato_clp }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabla -->
+  <div class="table-responsive mb-4">
+    <table class="table table-bordered table-hover">
+      <thead class="table-dark">
+        <tr>
+          <th>Descripción</th>
+          <th>Monto</th>
+          <th>Tipo</th>
+          <th>Categoría</th>
+          <th>Fecha</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for mov in movimientos %}
+        <tr>
+          <td>{{ mov.descripcion }}</td>
+          <td class="{% if mov.tipo == 'gasto' %}text-danger{% endif %}">
+            {% if mov.tipo == 'gasto' %}-{% endif %}{{ mov.monto | formato_clp }}
+          </td>
+          <td>{{ mov.tipo }}</td>
+          <td>{{ mov.categoria }}</td>
+          <td>{{ mov.fecha.strftime("%d-%m-%Y") }}</td>
+          <td>
+            <button onclick="editarMovimientoModal({{ mov.id }}, '{{ mov.descripcion }}', '{{ mov.monto }}', '{{ mov.tipo }}', '{{ mov.categoria }}', '{{ mov.fecha.year }}', '{{ mov.fecha.month }}')" class="btn btn-sm btn-warning">Editar</button>
+            <button onclick="confirmarEliminacion({{ mov.id }})" class="btn btn-sm btn-danger">Eliminar</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Gráficos -->
+  <div class="row">
+    <div class="col-md-6"><canvas id="graficoBarras"></canvas></div>
+    <div class="col-md-6"><canvas id="graficoTorta"></canvas></div>
+  </div>
+</div>
+
+<!-- Modal eliminar -->
+<div class="modal fade" id="modalEliminar" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="POST" action="/eliminar" class="modal-content">
+      <div class="modal-header"><h5 class="modal-title">Confirmar eliminación</h5></div>
+      <div class="modal-body">
+        <p>¿Estás seguro que deseas eliminar este registro?</p>
+        <input type="hidden" name="id" id="eliminar-id">
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal editar -->
+<div class="modal fade" id="modalEditar" tabindex="-1">
+  <div class="modal-dialog">
+    <form method="POST" class="modal-content" id="formEditar">
+      <div class="modal-header"><h5 class="modal-title">Editar Movimiento</h5></div>
+      <div class="modal-body">
+        <div class="mb-2">
+          <label class="form-label">Descripción</label>
+          <input type="text" name="descripcion" class="form-control" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Monto</label>
+          <input type="text" name="monto" class="form-control" id="editar-monto" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Tipo</label>
+          <select name="tipo" class="form-select" required>
+            <option value="ingreso">Ingreso</option>
+            <option value="gasto">Gasto</option>
+          </select>
+        </div>
+        <div class="mb-2">
+          <label class="form-label">Categoría</label>
+          <select name="categoria" class="form-select" required>
+            <option value="CMR">CMR</option>
+            <option value="Credito">Credito</option>
+            <option value="Wom">Wom</option>
+            <option value="Luz">Luz</option>
+            <option value="Casa">Casa</option>
+            <option value="Once">Once</option>
+            <option value="Ahorro">Ahorro</option>
+          </select>
+        </div>
+        <div class="row">
+          <div class="col">
+            <label class="form-label">Mes</label>
+            <select name="mes_movimiento" class="form-select" required>
+              {% for i in range(1, 13) %}
+                <option value="{{ i }}">{{ meses_nombre[i - 1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col">
+            <label class="form-label">Año</label>
+            <input type="number" name="anio_movimiento" class="form-control" required>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-warning">Guardar Cambios</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  window.meses = {{ meses|tojson }};
+  window.ingresos = {{ ingresos_meses|tojson }};
+  window.gastos = {{ gastos_meses|tojson }};
+  window.categoriasGasto = {{ categoriasGasto|tojson }};
+  window.totalesGasto = {{ totalesGasto|tojson }};
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ url_for('static', filename='js/formato.js') }}"></script>
+<script src="{{ url_for('static', filename='js/graficos.js') }}"></script>
+<script src="{{ url_for('static', filename='js/eliminar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/formulario_validacion.js') }}"></script>
+<script src="{{ url_for('static', filename='js/editar.js') }}"></script>
+</body>
+</html>
