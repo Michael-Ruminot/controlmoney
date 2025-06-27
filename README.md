@@ -11,7 +11,6 @@ Tecnologias usadas: Flask , Sqlite, Html, Javascript, Bootstrap
 - Uso de la base de datos ,a traves del kit de herramientas SQL y ORM (Object Relational Mapper) para python.
   Dentro de app.py se importan la biblioteca SQLALCHEMY.
 
-https://github.com/Michael-Ruminot/controlmoney/blob/f8894f89770da4fb1df4ed75ee86466deaf0be28/SQLALCHEMY.png
-
+![image]([https://github.com/user-attachments/assets/dbd6cbe5-7b61-45de-a856-d9e5d1851dd1](https://github.com/Michael-Ruminot/controlmoney/blob/f8894f89770da4fb1df4ed75ee86466deaf0be28/SQLALCHEMY.png))
 
 
