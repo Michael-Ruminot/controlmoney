@@ -11,7 +11,7 @@ Sistema de control de ingresos y gastos
 6. Al ejecutar flask run se inicia el server localhost o http://127.0.0.1:5000
 
 - Uso de la base de datos ,a traves del kit de herramientas SQL y ORM (Object Relational Mapper) para python.
-  Dentro de app.py se importan la biblioteca SQLALCHEMY.
+  Dentro de app.py se importan la biblioteca SQLALCHEMY. Al ejecutar app.py se creará una carpeta llamada Instance la cual se guarda la base de datos.
 
 ![image alt](https://github.com/Michael-Ruminot/controlmoney/blob/f8894f89770da4fb1df4ed75ee86466deaf0be28/SQLALCHEMY.png)
 
